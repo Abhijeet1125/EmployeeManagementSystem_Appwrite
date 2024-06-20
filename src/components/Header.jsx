@@ -1,15 +1,37 @@
-import { useState } from "react"
-import { Link, NavLink, Outlet } from "react-router-dom"
+import {  useState } from "react"
+import {  useSelector } from "react-redux"
+import { NavLink, useNavigate } from "react-router-dom"
+import authService from "../appwrite/auth"
+import { useDispatch } from "react-redux"
+import { updateAuthSlice } from "../store/authSlice"
+
 
 
 const Header = () => {
-
+    const dispatch = useDispatch()
+    const navigate = useNavigate ();
+    const login = useSelector(state => state.auth.loggedIn)
     const HeaderItems = ['Dashboard', 'Employee', 'Department', 'Position', 'Project', 'Salary']
     const [menu, setMenu] = useState(false);
 
     const change = () => {
         setMenu((e) => !e)
     }
+
+    const handleLogin =  async () => {
+       navigate ('./Login')
+    }
+
+    const handleLogout = async () => { 
+        try {
+            await authService .logout();
+            dispatch(updateAuthSlice(false))
+            navigate('./')
+        } catch (error) {
+            console.log ( error );
+        }
+    }
+    
 
     return (
         <>
@@ -55,11 +77,20 @@ const Header = () => {
 
                         <div className="flex items-center gap-4">
                             <div className="sm:flex sm:gap-4">
-                                <button
-                                    className="rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-white shadow"
-                                >
-                                    Login
-                                </button>
+                                {
+                                (login) && (  <button onClick={handleLogout}
+                                        className="rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-white shadow"
+                                    >
+                                        Logout
+                                    </button>)
+                                }
+                                {
+                                (login ==false) && (  <button onClick={handleLogin}
+                                        className="rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-white shadow"
+                                    >
+                                        Login 
+                                    </button>)
+                                }
 
                             </div>
 

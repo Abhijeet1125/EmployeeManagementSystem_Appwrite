@@ -1,24 +1,27 @@
 import { useState } from "react";
 import authService from "../appwrite/auth";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { updateAuthSlice } from "../store/authSlice";
+
 
 const Login = () => { 
     const [email, setEmail] = useState(null);
     const [password, setPassword] = useState(null);
     const [error, setError] = useState(null);
 
+    const dispatch = useDispatch();
     const navigate = useNavigate();
 
-
     const handleSubmit = async ( ) => { 
-        
         try {
             await authService.login({email , password}) 
-            if ( await authService.getCurrentUser()){
-                navigate('/Dashboard')
-            }
+            dispatch(updateAuthSlice(true));
+            navigate('/Dashboard')
+            
         } catch (err) {
             setError (  "wrong credentials")  
+            dispatch ( updateAuthSlice(false))
         }
     }
 

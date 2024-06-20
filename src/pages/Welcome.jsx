@@ -1,19 +1,23 @@
 import { Outlet, useNavigate } from 'react-router-dom';
 import  authService  from '../appwrite/auth';
+import { useEffect } from 'react';
 
 
 const Welcome = () => {
 
     const navigate = useNavigate()
 
-    const navToLogin = async ()=>{
-        try {            
-            await authService.logout();
-            navigate('/Login')
-        } catch (error) {
-            console.log("logout error \n");
-        }
+    const navToLogin = async ()=>{       
+        navigate('/Login')
     }
+
+    useEffect(() => {
+        const logout = async () => {
+            await authService.logout();
+        };
+
+        logout();
+    }, []);
 
     return (
         <>      
