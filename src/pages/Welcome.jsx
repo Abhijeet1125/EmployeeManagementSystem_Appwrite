@@ -7,8 +7,8 @@ const Welcome = () => {
 
     const navigate = useNavigate()
 
-    const navToLogin = async ()=>{       
-        navigate('/Login')
+    const navToLogin =()=>{           
+        navigate('/Login')        
     }
 
     useEffect(() => {
