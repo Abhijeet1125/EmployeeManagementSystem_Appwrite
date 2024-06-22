@@ -1,23 +1,23 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { LoginWarning } from '../components';
 import { useEffect, useState } from 'react';
-import departmentService from '../appwrite/departmentCollection';
-import { updateDepartmentList } from '../store/departmentSlice';
+import projectService from '../appwrite/projectCollection';
+import { updateProjectList } from '../store/projectSlice';
 import { useNavigate } from 'react-router-dom';
 
-const Departments = () => {
+const Projects = () => {
     const loggedIn = useSelector((state) => state.auth.loggedIn);
     const dispatch = useDispatch();
-    const headers = ['DepartmentName', 'Location', 'DepartmentDescription'];
-    const ToDisplay = useSelector((state) => state.dept.departmentsList);
+    const headers = ['ProjectName', 'department', 'ProjectDescription', 'Completed'];
+    const ToDisplay = useSelector((state) => state.project.projectList);
     const navigate = useNavigate();
     const [loader, setLoader] = useState(false);
 
-    const deptloader = async () => {
+    const Projectloader = async () => {
         try {
-            console.log ( "running dept")
-            const deptdata = await departmentService.getDepartments();
-            dispatch(updateDepartmentList(deptdata));
+            const data = await projectService.getProjects();
+            dispatch(updateProjectList(data));
+            console.log(data)
         } catch (error) {
             console.log(error);
         }
@@ -25,14 +25,14 @@ const Departments = () => {
 
     useEffect(() => {
         if (loggedIn) {
-            deptloader();
+            Projectloader();
         }
     }, [loader]);
 
     const handleDelete = async (id) => {
         try {
-            await departmentService.deleteDepartment({ id });
-            setLoader((e) => !e);
+            await projectService.deleteProject({ id });
+            setLoader((e) => !e)
         } catch (error) {
             console.log(error);
         }
@@ -47,17 +47,18 @@ const Departments = () => {
     };
 
     return (
+
         <>
             {!loggedIn && <LoginWarning />}
             {loggedIn && (
                 <>
                     <div className="container mx-auto p-6">
-                        <h1 className="text-3xl font-bold mb-6">Departments</h1>
+                        <h1 className="text-3xl font-bold mb-6">Projects</h1>
                         <button
                             onClick={() => navAddEdit(null)}
                             className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
                         >
-                            Add Department
+                            Add Project
                         </button>
                     </div>
                     <div className="overflow-x-auto shadow-md rounded-lg mx-auto w-full lg:w-4/5">
@@ -84,13 +85,15 @@ const Departments = () => {
                                             {headers.map((hea, index) => (
                                                 <td
                                                     key={index}
-                                                    className={`px-6 py-4 text-gray-900 ${
-                                                        hea === 'DepartmentDescription'
+                                                    className={`px-6 py-4 text-gray-900 ${hea === 'ProjectDescription'
                                                             ? 'w-1/3 break-words'
                                                             : 'whitespace-nowrap'
-                                                    }`}
+                                                        }`}
                                                 >
-                                                    {e[hea]}
+                                                {
+                                                    (hea == 'Completed') ? ( (e[hea])? ("True"):("False")) : ( (hea=="department")? ((e.department)?( e.department.DepartmentName) : ("Department Deleted")) : (e[hea]))
+                                                }
+
                                                 </td>
                                             ))}
                                             <td className="whitespace-nowrap px-6 py-4 text-gray-900">
@@ -119,4 +122,4 @@ const Departments = () => {
         </>
     );
 };
-export default Departments;
+export default Projects;
