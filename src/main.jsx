@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import './index.css'
 import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
-import { Welcome, Login, Layout, Test , Departments , DeptAddEdit,Projects, ProAddEdit} from './pages';
+import { Welcome, Login, Layout, Test , Departments , DeptAddEdit,Projects, ProAddEdit , Position , PosAddEdit} from './pages';
 import { Provider } from 'react-redux';
 import store from './store/store';
 
@@ -18,6 +18,8 @@ const router = createBrowserRouter(
       <Route path='Department/AddEdit/:id' element={<DeptAddEdit/>}></Route>
       <Route path='Project' element={<Projects/>}></Route>
       <Route path='Project/AddEdit/:id' element={<ProAddEdit/>}></Route>
+      <Route path='Position' element={<Position/>}></Route>
+      <Route path='Position/AddEdit/:id' element={<PosAddEdit/>}></Route>
     </Route>
   )
 )
