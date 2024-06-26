@@ -26,12 +26,9 @@ const EmpAddEdit = () => {
     });
     const [no, setNO] = useState(null)
 
-
-    useEffect(() => { console.log(formData) }, [formData])
-
     const handleSubmit = async (e) => {
-        e.preventDefault();
-
+        e.preventDefault()
+        const filteredList = selectedpro.filter(item => item !== undefined);
         try {
             if (id === 'new') {
                 await EmployeeService.createEmployee({
@@ -40,21 +37,23 @@ const EmpAddEdit = () => {
                     department: formData.department,
                     Gender: formData.Gender,
                     position: formData.position,
-                    project: selectedpro,
+                    project: filteredList,
                     Email: formData.Email,
                     Phone: formData.Phone,
                     Address: formData.Address,
                 })
             }
             else {
+                console.log(formData, "printing at updation")
+                console.log(selectedpro, "selected Pro")
                 await EmployeeService.updateEmployee({
-                    id,
+                    id: id,
                     FirstName: formData.FirstName,
                     LastName: formData.LastName,
                     department: formData.department,
                     Gender: formData.Gender,
                     position: formData.position,
-                    project: selectedpro,
+                    project: filteredList,
                     Email: formData.Email,
                     Phone: formData.Phone,
                     Address: formData.Address,
@@ -117,8 +116,7 @@ const EmpAddEdit = () => {
                     department: (employee.department) ? employee.department['$id'] : null,
                     position: (employee.position) ? employee.position['$id'] : null,
                 })
-                setSelectedpro([...list])
-                console.log(selectedpro, " selected pro h bro ")
+                setSelectedpro([...list])                          
             }
         }
     }, []);
@@ -129,7 +127,7 @@ const EmpAddEdit = () => {
             {loggedIn && (
                 <>
                     {no && <p className="text-red-500 mt-4">{no}</p>}
-                    <form className="space-y-4">
+                    <form className="space-y-4" onSubmit={handleSubmit}>
                         <div className="flex space-x-4">
                             <div className="w-1/2">
                                 <label className="block text-gray-700">First Name</label>
@@ -138,7 +136,7 @@ const EmpAddEdit = () => {
                                     name="FirstName"
                                     value={formData.FirstName}
                                     onChange={handleChange}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
                                 />
                             </div>
                             <div className="w-1/2">
@@ -148,7 +146,7 @@ const EmpAddEdit = () => {
                                     name="LastName"
                                     value={formData.LastName}
                                     onChange={handleChange}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
                                 />
                             </div>
                         </div>
@@ -159,7 +157,7 @@ const EmpAddEdit = () => {
                                 name="department"
                                 value={formData.department}
                                 onChange={handleChange}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
                             >
                                 <option value="">Select Department</option>
                                 {departments.map(dept => (
@@ -174,7 +172,7 @@ const EmpAddEdit = () => {
                                 name="Gender"
                                 value={formData.Gender}
                                 onChange={handleChange}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
                             >
                                 <option value="">Select Gender</option>
                                 <option value="Male">Male</option>
@@ -190,7 +188,7 @@ const EmpAddEdit = () => {
                                 value={formData.position}
                                 onChange={handleChange}
                                 disabled={!formData.department}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
                             >
                                 <option value="">Select Position</option>
                                 {positions.map(pos => (
@@ -206,7 +204,7 @@ const EmpAddEdit = () => {
                                 value={formData.project}
                                 onChange={handleChange}
                                 disabled={!formData.department}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
                             >
                                 <option value="">Select Project</option>
                                 {projects.map(pro => (
@@ -215,23 +213,19 @@ const EmpAddEdit = () => {
                             </select>
                         </div>
 
-                        <div className="bg-gray-100 flex flex-col items-center justify-center p-4 rounded-md">
+                        <div className="bg-gray-100 flex flex-col items-center justify-center ">
                             <div id="pill-container" className="flex flex-wrap space-x-2">
                                 {prolist
                                     .filter(proj => selectedpro.includes(proj.id))
-                                    .map(sepro => (
-                                        <div key={sepro.id} className="mb-2">
-                                            <button
-                                                type="button"
-                                                onClick={() => handleDeletePill(sepro.id)}
-                                                className="inline-flex items-center px-3 py-1 border border-gray-300 shadow-sm rounded-full bg-white text-sm leading-4 font-medium text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
-                                            >
-                                                {sepro.ProjectName}
-                                            </button>
+                                    .map((sepro) => (
+                                        <div key={sepro.id} className="mb-4" onClick={() => (handleDeletePill(sepro.id))} >
+                                            <PillButton value={sepro.ProjectName} />
                                         </div>
-                                    ))}
+                                    ))
+                                }
                             </div>
                         </div>
+
 
                         <div>
                             <label className="block text-gray-700">Email</label>
@@ -240,7 +234,7 @@ const EmpAddEdit = () => {
                                 name="Email"
                                 value={formData.Email}
                                 onChange={handleChange}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
                             />
                         </div>
 
@@ -251,7 +245,7 @@ const EmpAddEdit = () => {
                                 name="Phone"
                                 value={formData.Phone}
                                 onChange={handleChange}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
                             />
                         </div>
 
@@ -261,19 +255,18 @@ const EmpAddEdit = () => {
                                 name="Address"
                                 value={formData.Address}
                                 onChange={handleChange}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
                                 rows="4"
                             />
                         </div>
 
                         <button
-                            type="submit"
-                            className="mt-4 w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                            onClick={handleSubmit}
+                            className="mt-4 w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
                         >
                             Submit
                         </button>
                     </form>
-
                 </>
             )}
         </>
