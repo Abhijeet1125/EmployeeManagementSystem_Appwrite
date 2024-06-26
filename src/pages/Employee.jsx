@@ -1,24 +1,24 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { LoginWarning } from '../components';
+import { LoginWarning , BlueButton } from '../components';
 import { useEffect, useState } from 'react';
-import  PositionService from '../appwrite/positionCollection';
-import { updatePositionList } from '../store/positionSlice';
+import  EmployeeService from '../appwrite/EmployeeCollection';
+import { updateEmployeeList } from '../store/EmployeeSlice';
 import { useNavigate } from 'react-router-dom';
 
 
 
-const Position = () => {
+const Employee = () => {
     const loggedIn = useSelector((state) => state.auth.loggedIn);
     const dispatch = useDispatch();
-    const headers = ['PositionName', 'department' , 'PositionDescription'];
-    const ToDisplay = useSelector((state) => state.position.PositionList);
+    const headers = ["FirstName" ,  "LastName","department" ,"Gender", "position"  ,"project" ,"Email" ,"Phone"  ]; //  
+    const ToDisplay = useSelector((state) => state.employee.EmployeeList);
     const navigate = useNavigate();
     const [loader, setLoader] = useState(false);
 
-    const Positionloader = async () => {
+    const Employeeloader = async () => {
         try {
-            const data = await PositionService.getPositions();
-            dispatch(updatePositionList(data));
+            const data = await EmployeeService.getEmployees()
+            dispatch(updateEmployeeList(data));
             console.log(data)
         } catch (error) {
             console.log(error);
@@ -27,13 +27,13 @@ const Position = () => {
 
     useEffect(() => {
         if (loggedIn) {
-            Positionloader();
+            Employeeloader();
         }
     }, [loader]);
 
     const handleDelete = async (id) => {
         try {
-            await PositionService.deletePosition({ id });
+            await EmployeeService.deleteEmployee({ id });
             setLoader((e) => !e)
         } catch (error) {
             console.log(error);
@@ -55,15 +55,15 @@ const Position = () => {
             {loggedIn && (
                 <>
                     <div className="container mx-auto p-6">
-                        <h1 className="text-3xl font-bold mb-6">Positions</h1>
+                        <h1 className="text-3xl font-bold mb-6">Employees</h1>
                         <button
                             onClick={() => navAddEdit(null)}
                             className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
                         >
-                            Add Position 
+                            Add Employee 
                         </button>
                     </div>
-                    <div className="overflow-x-auto shadow-md rounded-lg mx-auto w-full lg:w-4/5">
+                    <div className="overflow-x-auto shadow-md rounded-lg mx-auto w-full ">
                         <table className="min-w-full divide-y divide-gray-200 bg-white text-sm">
                             <thead className="bg-gray-50">
                                 <tr>
@@ -87,13 +87,14 @@ const Position = () => {
                                             {headers.map((hea, index) => (
                                                 <td
                                                     key={index}
-                                                    className={`px-6 py-4 text-gray-900 ${(hea === 'PositionDescription' || hea === 'department')
-                                                            ? 'w-1/3 break-words'
-                                                            : 'whitespace-nowrap'
-                                                        }`}
+                                                    className={'px-6 py-4 text-gray-900 w-1/3 break-words'}
                                                 >
                                                 {
-                                                    (hea=="department")? ((e.department)?( (e.department).map (jk => `${jk .DepartmentName},   `)) : ("Department Deleted")) : (e[hea])
+                                                    (hea=="department")? ((e.department)?( e.department.DepartmentName ) : ("Department Deleted")) : (
+                                                        (hea=="position")? ((e.position)?( e.position.PositionName ) : ("Position Deleted")) :(
+                                                            (hea=="project")? ((e.project)?( (e.project).map(pro => pro.ProjectName) ) : ("Position Deleted")) :( e[`${hea}`] )
+                                                        )
+                                                    )
                                                 }
                                                 </td>
                                             ))}
@@ -123,5 +124,5 @@ const Position = () => {
         </>
     );
 };
-export default Position;
+export default Employee;
 

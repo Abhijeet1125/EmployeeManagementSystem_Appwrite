@@ -8,6 +8,8 @@ import Projects from "./Projects";
 import ProAddEdit from "./ProAddEdit";
 import Position from "./Position";
 import PosAddEdit from "./PosAddEdit";
+import Employee from "./Employee";
+import EmpAddEdit from "./EmpAddAdit"
 
 export {
     Welcome,
@@ -20,4 +22,6 @@ export {
     ProAddEdit,
     Position,
     PosAddEdit,
+    Employee,
+    EmpAddEdit
 }

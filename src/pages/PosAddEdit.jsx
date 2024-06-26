@@ -43,7 +43,7 @@ const PosAddEdit = () => {
                 })
             }
             else {
-                await projectService.updateProject({
+                await PositionService.updatePosition({
                     id,
                     PositionName: positionName,
                     department: selectedDepartments,
