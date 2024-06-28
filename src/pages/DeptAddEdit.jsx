@@ -49,8 +49,9 @@ const DeptAddEdit = () => {
             {loggedIn && (
                 <>
                     {no && <p className="text-red-500 mt-4">{no}</p>}
-                    <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-lg">
-                        <h2 className="text-2xl font-bold mb-6"> {(id === 'new') ? ("Add") : ("Edit")} {"Department"}</h2>
+                    <div className='bg-gray-900 min-h-screen pt-8'>
+                    <div className="max-w-2xl mx-auto p-6 bg-gray-100 text-brown-900 shadow-md rounded-lg">
+                        <h2 className="text-2xl font-bold mb-6 mt-6 text-brown-900"> {(id === 'new') ? ("Add") : ("Edit")} {"Department"}</h2>
                         <form onSubmit={handleSubmit}>
                             <div className="mb-4">
                                 <label htmlFor="departmentName" className="block text-gray-700">Department Name:</label>
@@ -83,6 +84,7 @@ const DeptAddEdit = () => {
                             </div>
                             <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Save</button>
                         </form>
+                    </div>
                     </div>
                 </>
             )}

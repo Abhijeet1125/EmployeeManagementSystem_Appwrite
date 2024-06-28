@@ -1,4 +1,4 @@
-import {  useState } from "react"
+import {  useState , useEffect} from "react"
 import {  useSelector } from "react-redux"
 import { NavLink, useNavigate } from "react-router-dom"
 import authService from "../appwrite/auth"
@@ -11,7 +11,7 @@ const Header = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate ();
     const login = useSelector(state => state.auth.loggedIn)
-    const HeaderItems = ['Dashboard', 'Employee', 'Department', 'Position', 'Project', 'Salary']
+    const HeaderItems = ['Dashboard', 'Employee', 'Department', 'Position', 'Project'] // 'Salary'
     const [menu, setMenu] = useState(false);
 
     const change = () => {
@@ -31,11 +31,20 @@ const Header = () => {
             console.log ( error );
         }
     }
+
+    useEffect(() => {
+        const checker = async () => {
+            const user = await authService.getCurrentUser();
+            if ( user ){dispatch(updateAuthSlice(true));}
+        };
+
+        checker ();
+    }, []);
     
 
     return (
         <>
-            <header className="bg-white">
+            <header className=" bg-gray-200 fixed top-0 left-0 w-full z-50 ">
                 <div className="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
                     <div className="flex h-16 items-center justify-between">
                         <div className="md:flex md:items-center md:gap-12">
@@ -113,7 +122,7 @@ const Header = () => {
                                 <nav className="absolute top-16 right-0 w-auto bg-white shadow-lg flex-col divide-y divide-gray-100">
                                     <ul className="flex flex-col gap-6 text-sm">
                                         {HeaderItems.map((item, index) => (
-                                            <li key={index}>
+                                            <li key={index} onClick={change}>
                                                 <NavLink
                                                     to={`/${item}`}
                                                     className={({ isActive }) =>

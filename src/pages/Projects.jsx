@@ -14,20 +14,28 @@ const Projects = () => {
     const [loader, setLoader] = useState(false);
 
     const Projectloader = async () => {
+        console.log ( "running project loader")
         try {
             const data = await projectService.getProjects();
             dispatch(updateProjectList(data));
-            console.log(data)
         } catch (error) {
             console.log(error);
         }
     };
 
+
     useEffect(() => {
         if (loggedIn) {
-            Projectloader();
+            const interval = setInterval(() => {
+                Projectloader();
+                if (ToDisplay &&  ToDisplay.length > 0) {
+                    clearInterval(interval);
+                }
+            }, 1200);
+    
+            return () => clearInterval(interval);
         }
-    }, [loader]);
+    }, [loggedIn, loader, ToDisplay.length]);
 
     const handleDelete = async (id) => {
         try {
@@ -51,7 +59,7 @@ const Projects = () => {
         <>
             {!loggedIn && <LoginWarning />}
             {loggedIn && (
-                <>
+                <div className=' bg-gray-900 text-white min-h-screen'>
                     <div className="container mx-auto p-6">
                         <h1 className="text-3xl font-bold mb-6">Projects</h1>
                         <button
@@ -78,7 +86,7 @@ const Projects = () => {
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
+                            <tbody className="bg-yellow-50 divide-y divide-gray-200">
                                 {ToDisplay &&
                                     ToDisplay.map((e) => (
                                         <tr key={e.id} className="hover:bg-gray-50">
@@ -117,7 +125,7 @@ const Projects = () => {
                             </tbody>
                         </table>
                     </div>
-                </>
+                </div>
             )}
         </>
     );

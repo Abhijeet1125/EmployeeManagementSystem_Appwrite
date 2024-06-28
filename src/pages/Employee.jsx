@@ -16,20 +16,31 @@ const Employee = () => {
     const [loader, setLoader] = useState(false);
 
     const Employeeloader = async () => {
+        console.log ( "employ loader")
         try {
             const data = await EmployeeService.getEmployees()
-            dispatch(updateEmployeeList(data));
-            console.log(data)
+            dispatch(updateEmployeeList(data));           
         } catch (error) {
             console.log(error);
         }
     };
 
+
     useEffect(() => {
-        if (loggedIn) {
-            Employeeloader();
+        if (loggedIn) {            
+            const interval = setInterval(() => {
+                Employeeloader();
+                if (ToDisplay && ToDisplay.length > 0) {
+                    clearInterval(interval);
+                }
+            }, 1200);
+    
+            return () => clearInterval(interval);
         }
-    }, [loader]);
+    }, [loggedIn, loader, ToDisplay.length]);
+
+
+
 
     const handleDelete = async (id) => {
         try {
@@ -53,12 +64,12 @@ const Employee = () => {
         <>
             {!loggedIn && <LoginWarning />}
             {loggedIn && (
-                <>
-                    <div className="container mx-auto p-6">
+                <div className='bg-gray-900 text-white ' >
+                    <div className="container mx-auto pt-6">
                         <h1 className="text-3xl font-bold mb-6">Employees</h1>
                         <button
                             onClick={() => navAddEdit(null)}
-                            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                            className="bg-blue-500 text-white px-4 py-2 m-6 rounded-md hover:bg-blue-600"
                         >
                             Add Employee 
                         </button>
@@ -80,7 +91,7 @@ const Employee = () => {
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
+                            <tbody className="bg-yellow-50 divide-y divide-gray-200">
                                 {ToDisplay &&
                                     ToDisplay.map((e) => (
                                         <tr key={e.id} className="hover:bg-gray-50">
@@ -119,7 +130,7 @@ const Employee = () => {
                             </tbody>
                         </table>
                     </div>
-                </>
+                </div>
             )}
         </>
     );

@@ -61,12 +61,12 @@ const ProAddEdit = () => {
         <>
             {!loggedIn && <LoginWarning />}
             {loggedIn && (
-                <>
+                <div className='bg-gray-900 text-black min-h-screen pt-8'>
                     {no && <p className="text-red-500 mt-4">{no}</p>}
-                    <div className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-md mt-10">
-                        <h2 className="text-2xl font-bold mb-6 text-center">Project Form</h2>
+                    <div className="max-w-lg mx-auto p-6 bg-gray-100 rounded-lg shadow-md mt-10">
+                        <h2 className="text-2xl font-bold mb-6 text-center text-black">Project Form</h2>
                         <form onSubmit={handleSubmit}>
-                            <div className="mb-4">
+                            <div className="mb-4 text-black">
                                 <label htmlFor="projectName" className="block text-sm font-medium text-gray-700">Project Name:</label>
                                 <input
                                     type="text"
@@ -79,7 +79,7 @@ const ProAddEdit = () => {
                                 />
                             </div>
 
-                            <div className="mb-4">
+                            <div className="mb-4 text-black">
                                 <label htmlFor="completed" className="block text-sm font-medium text-gray-700">Completed:</label>
                                 <input
                                     type="checkbox"
@@ -135,7 +135,7 @@ const ProAddEdit = () => {
                             </div>
                         </form>
                     </div>
-                </>
+                </div>
             )}
         </>
     );

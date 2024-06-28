@@ -14,20 +14,29 @@ const Departments = () => {
     const [loader, setLoader] = useState(false);
 
     const deptloader = async () => {
+        console.log ( "running deptloader")
         try {
-            console.log ( "running dept")
             const deptdata = await departmentService.getDepartments();
             dispatch(updateDepartmentList(deptdata));
         } catch (error) {
             console.log(error);
+            setLoader ( (e) => ! e );
         }
     };
 
     useEffect(() => {
         if (loggedIn) {
-            deptloader();
+            const interval = setInterval(() => {
+                deptloader();
+                if (ToDisplay && ToDisplay.length > 0) {
+                    clearInterval(interval);
+                }
+            }, 1200);
+    
+            return () => clearInterval(interval);
         }
-    }, [loader]);
+    }, [loggedIn, loader, ToDisplay.length]);
+    
 
     const handleDelete = async (id) => {
         try {
@@ -50,7 +59,7 @@ const Departments = () => {
         <>
             {!loggedIn && <LoginWarning />}
             {loggedIn && (
-                <>
+                <div className= "bg-gray-900 text-white">
                     <div className="container mx-auto p-6">
                         <h1 className="text-3xl font-bold mb-6">Departments</h1>
                         <button
@@ -61,7 +70,7 @@ const Departments = () => {
                         </button>
                     </div>
                     <div className="overflow-x-auto shadow-md rounded-lg mx-auto w-full lg:w-4/5">
-                        <table className="min-w-full divide-y divide-gray-200 bg-white text-sm">
+                        <table className="min-w-full divide-y divide-gray-200 bg-yellow-50 text-brown-900 text-sm">
                             <thead className="bg-gray-50">
                                 <tr>
                                     {headers.map((e, index) => (
@@ -77,7 +86,7 @@ const Departments = () => {
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
+                            <tbody className="divide-y divide-gray-200  bg-yellow-50 ">
                                 {ToDisplay &&
                                     ToDisplay.map((e) => (
                                         <tr key={e.id} className="hover:bg-gray-50">
@@ -114,7 +123,7 @@ const Departments = () => {
                             </tbody>
                         </table>
                     </div>
-                </>
+                </div>
             )}
         </>
     );

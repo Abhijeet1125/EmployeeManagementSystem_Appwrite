@@ -16,20 +16,28 @@ const Position = () => {
     const [loader, setLoader] = useState(false);
 
     const Positionloader = async () => {
+        console.log ( "running position loader ");
         try {
             const data = await PositionService.getPositions();
             dispatch(updatePositionList(data));
-            console.log(data)
         } catch (error) {
             console.log(error);
         }
     };
 
+
     useEffect(() => {
         if (loggedIn) {
-            Positionloader();
+            const interval = setInterval(() => {
+                Positionloader();
+                if (ToDisplay && ToDisplay.length > 0) {
+                    clearInterval(interval);
+                }
+            }, 1200);
+    
+            return () => clearInterval(interval);
         }
-    }, [loader]);
+    }, [loggedIn, loader, ToDisplay.length]);
 
     const handleDelete = async (id) => {
         try {
@@ -53,7 +61,7 @@ const Position = () => {
         <>
             {!loggedIn && <LoginWarning />}
             {loggedIn && (
-                <>
+                <div className=' bg-gray-900 text-white min-h-screen '>
                     <div className="container mx-auto p-6">
                         <h1 className="text-3xl font-bold mb-6">Positions</h1>
                         <button
@@ -80,7 +88,7 @@ const Position = () => {
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
+                            <tbody className="bg-yellow-50 divide-y divide-gray-200">
                                 {ToDisplay &&
                                     ToDisplay.map((e) => (
                                         <tr key={e.id} className="hover:bg-gray-50">
@@ -118,7 +126,7 @@ const Position = () => {
                             </tbody>
                         </table>
                     </div>
-                </>
+                </div>
             )}
         </>
     );

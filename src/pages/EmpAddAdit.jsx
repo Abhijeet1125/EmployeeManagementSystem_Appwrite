@@ -44,8 +44,6 @@ const EmpAddEdit = () => {
                 })
             }
             else {
-                console.log(formData, "printing at updation")
-                console.log(selectedpro, "selected Pro")
                 await EmployeeService.updateEmployee({
                     id: id,
                     FirstName: formData.FirstName,
@@ -65,6 +63,7 @@ const EmpAddEdit = () => {
             setNO("Sorry,Please try again")
         }
     };
+
 
     const [positions, setPositions] = useState([]);
     const [projects, setProjects] = useState([]);
@@ -116,7 +115,7 @@ const EmpAddEdit = () => {
                     department: (employee.department) ? employee.department['$id'] : null,
                     position: (employee.position) ? employee.position['$id'] : null,
                 })
-                setSelectedpro([...list])                          
+                setSelectedpro([...list])
             }
         }
     }, []);
@@ -127,146 +126,151 @@ const EmpAddEdit = () => {
             {loggedIn && (
                 <>
                     {no && <p className="text-red-500 mt-4">{no}</p>}
-                    <form className="space-y-4" onSubmit={handleSubmit}>
-                        <div className="flex space-x-4">
-                            <div className="w-1/2">
-                                <label className="block text-gray-700">First Name</label>
-                                <input
-                                    type="text"
-                                    name="FirstName"
-                                    value={formData.FirstName}
-                                    onChange={handleChange}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                                />
-                            </div>
-                            <div className="w-1/2">
-                                <label className="block text-gray-700">Last Name</label>
-                                <input
-                                    type="text"
-                                    name="LastName"
-                                    value={formData.LastName}
-                                    onChange={handleChange}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                                />
-                            </div>
+                    <div className="bg-gray-900  p-6 min-h-screen flex items-center justify-center">
+                        <div className="w-full max-w-2xl bg-gray-100 rounded-lg p-3">
+                            <h2 className='text-amber-700 font-bold p-6 '>Employee Form</h2>
+                            <form className="space-y-4" onSubmit={handleSubmit}>
+                                <div className="flex space-x-4">
+                                    <div className="w-1/2">
+                                        <label className="block text-gray-700">First Name</label>
+                                        <input
+                                            type="text"
+                                            name="FirstName"
+                                            value={formData.FirstName}
+                                            onChange={handleChange}
+                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                                        />
+                                    </div>
+                                    <div className="w-1/2">
+                                        <label className="block text-gray-700">Last Name</label>
+                                        <input
+                                            type="text"
+                                            name="LastName"
+                                            value={formData.LastName}
+                                            onChange={handleChange}
+                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-gray-700">Department</label>
+                                    <select
+                                        name="department"
+                                        value={formData.department}
+                                        onChange={handleChange}
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                                    >
+                                        <option value="">Select Department</option>
+                                        {departments.map(dept => (
+                                            <option key={dept.id} value={dept.id}>{dept.DepartmentName}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="block text-gray-700">Gender</label>
+                                    <select
+                                        name="Gender"
+                                        value={formData.Gender}
+                                        onChange={handleChange}
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                                    >
+                                        <option value="">Select Gender</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="block text-gray-700">Position</label>
+                                    <select
+                                        name="position"
+                                        value={formData.position}
+                                        onChange={handleChange}
+                                        disabled={!formData.department}
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                                    >
+                                        <option value="">Select Position</option>
+                                        {positions.map(pos => (
+                                            <option key={pos.id} value={pos.id}>{pos.PositionName}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="block text-gray-700">Project</label>
+                                    <select
+                                        name="project"
+                                        value={formData.project}
+                                        onChange={handleChange}
+                                        disabled={!formData.department}
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                                    >
+                                        <option value="">Select Project</option>
+                                        {projects.map(pro => (
+                                            <option key={pro.id} value={pro.id}>{pro.ProjectName}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div className="bg-gray-100 flex flex-col items-center justify-center ">
+                                    <div id="pill-container" className="flex flex-wrap space-x-2">
+                                        {prolist
+                                            .filter(proj => selectedpro.includes(proj.id))
+                                            .map((sepro) => (
+                                                <div key={sepro.id} className="mb-4" onClick={() => (handleDeletePill(sepro.id))} >
+                                                    <PillButton value={sepro.ProjectName} />
+                                                </div>
+                                            ))
+                                        }
+                                    </div>
+                                </div>
+
+
+                                <div>
+                                    <label className="block text-gray-700">Email</label>
+                                    <input
+                                        type="email"
+                                        name="Email"
+                                        value={formData.Email}
+                                        onChange={handleChange}
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-gray-700">Phone</label>
+                                    <input
+                                        type="tel"
+                                        name="Phone"
+                                        value={formData.Phone}
+                                        onChange={handleChange}
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-gray-700">Address</label>
+                                    <textarea
+                                        name="Address"
+                                        value={formData.Address}
+                                        onChange={handleChange}
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                                        rows="4"
+                                    />
+                                </div>
+
+                                <button
+                                    onClick={handleSubmit}
+                                    className="mt-4 w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
+                                >
+                                    Submit
+                                </button>
+                            </form>
                         </div>
-
-                        <div>
-                            <label className="block text-gray-700">Department</label>
-                            <select
-                                name="department"
-                                value={formData.department}
-                                onChange={handleChange}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                            >
-                                <option value="">Select Department</option>
-                                {departments.map(dept => (
-                                    <option key={dept.id} value={dept.id}>{dept.DepartmentName}</option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div>
-                            <label className="block text-gray-700">Gender</label>
-                            <select
-                                name="Gender"
-                                value={formData.Gender}
-                                onChange={handleChange}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                            >
-                                <option value="">Select Gender</option>
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label className="block text-gray-700">Position</label>
-                            <select
-                                name="position"
-                                value={formData.position}
-                                onChange={handleChange}
-                                disabled={!formData.department}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                            >
-                                <option value="">Select Position</option>
-                                {positions.map(pos => (
-                                    <option key={pos.id} value={pos.id}>{pos.PositionName}</option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div>
-                            <label className="block text-gray-700">Project</label>
-                            <select
-                                name="project"
-                                value={formData.project}
-                                onChange={handleChange}
-                                disabled={!formData.department}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                            >
-                                <option value="">Select Project</option>
-                                {projects.map(pro => (
-                                    <option key={pro.id} value={pro.id}>{pro.ProjectName}</option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div className="bg-gray-100 flex flex-col items-center justify-center ">
-                            <div id="pill-container" className="flex flex-wrap space-x-2">
-                                {prolist
-                                    .filter(proj => selectedpro.includes(proj.id))
-                                    .map((sepro) => (
-                                        <div key={sepro.id} className="mb-4" onClick={() => (handleDeletePill(sepro.id))} >
-                                            <PillButton value={sepro.ProjectName} />
-                                        </div>
-                                    ))
-                                }
-                            </div>
-                        </div>
-
-
-                        <div>
-                            <label className="block text-gray-700">Email</label>
-                            <input
-                                type="email"
-                                name="Email"
-                                value={formData.Email}
-                                onChange={handleChange}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-gray-700">Phone</label>
-                            <input
-                                type="tel"
-                                name="Phone"
-                                value={formData.Phone}
-                                onChange={handleChange}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-gray-700">Address</label>
-                            <textarea
-                                name="Address"
-                                value={formData.Address}
-                                onChange={handleChange}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                                rows="4"
-                            />
-                        </div>
-
-                        <button
-                            onClick={handleSubmit}
-                            className="mt-4 w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
-                        >
-                            Submit
-                        </button>
-                    </form>
+                    </div>
                 </>
             )}
         </>
