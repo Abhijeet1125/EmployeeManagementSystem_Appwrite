@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import projectService from '../appwrite/projectCollection';
 import { updateProjectList } from '../store/projectSlice';
 import { useNavigate } from 'react-router-dom';
+import dataLoader from '../store/dataLoader';
 
 const Projects = () => {
     const loggedIn = useSelector((state) => state.auth.loggedIn);
@@ -23,19 +24,20 @@ const Projects = () => {
         }
     };
 
-
+    const [fi  , setFi] = useState ( false);
     useEffect(() => {
         if (loggedIn) {
             const interval = setInterval(() => {
-                Projectloader();
-                if (ToDisplay &&  ToDisplay.length > 0) {
+                dataLoader(dispatch)
+                setFi ( true )
+                if (fi == false) {
                     clearInterval(interval);
                 }
             }, 1200);
     
             return () => clearInterval(interval);
         }
-    }, [loggedIn, loader, ToDisplay.length]);
+    }, [loggedIn, loader, ]);
 
     const handleDelete = async (id) => {
         try {

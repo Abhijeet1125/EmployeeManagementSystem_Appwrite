@@ -61,7 +61,7 @@ const Header = () => {
 
                         <div className="hidden md:block">
                             <nav aria-label="Global">
-                                <ul className="flex items-center gap-6 text-sm">
+                                <ul className="flex items-center gap-6 text-lg font-semibold">
                                     {
                                         HeaderItems.map((item, index) => {
                                             return (

@@ -2,8 +2,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { LoginWarning } from '../components';
 import { useEffect, useState } from 'react';
 import departmentService from '../appwrite/departmentCollection';
-import { updateDepartmentList } from '../store/departmentSlice';
 import { useNavigate } from 'react-router-dom';
+import dataLoader from '../store/dataLoader'
 
 const Departments = () => {
     const loggedIn = useSelector((state) => state.auth.loggedIn);
@@ -12,30 +12,23 @@ const Departments = () => {
     const ToDisplay = useSelector((state) => state.dept.departmentsList);
     const navigate = useNavigate();
     const [loader, setLoader] = useState(false);
+    
 
-    const deptloader = async () => {
-        console.log ( "running deptloader")
-        try {
-            const deptdata = await departmentService.getDepartments();
-            dispatch(updateDepartmentList(deptdata));
-        } catch (error) {
-            console.log(error);
-            setLoader ( (e) => ! e );
-        }
-    };
 
+    const [fi , setFi] = useState(false )
     useEffect(() => {
         if (loggedIn) {
             const interval = setInterval(() => {
-                deptloader();
-                if (ToDisplay && ToDisplay.length > 0) {
+                dataLoader(dispatch);
+                setFi(true)
+                if (fi == true) {
                     clearInterval(interval);
                 }
             }, 1200);
     
             return () => clearInterval(interval);
         }
-    }, [loggedIn, loader, ToDisplay.length]);
+    }, [loggedIn, fi , loader]);
     
 
     const handleDelete = async (id) => {

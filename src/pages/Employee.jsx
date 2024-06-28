@@ -2,8 +2,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { LoginWarning , BlueButton } from '../components';
 import { useEffect, useState } from 'react';
 import  EmployeeService from '../appwrite/EmployeeCollection';
-import { updateEmployeeList } from '../store/EmployeeSlice';
 import { useNavigate } from 'react-router-dom';
+import dataLoader from '../store/dataLoader'
+
 
 
 
@@ -15,29 +16,21 @@ const Employee = () => {
     const navigate = useNavigate();
     const [loader, setLoader] = useState(false);
 
-    const Employeeloader = async () => {
-        console.log ( "employ loader")
-        try {
-            const data = await EmployeeService.getEmployees()
-            dispatch(updateEmployeeList(data));           
-        } catch (error) {
-            console.log(error);
-        }
-    };
 
-
+    const [fi , setFi ] = useState ( false )
     useEffect(() => {
         if (loggedIn) {            
             const interval = setInterval(() => {
-                Employeeloader();
-                if (ToDisplay && ToDisplay.length > 0) {
+                dataLoader(dispatch)
+                setFi (true)
+                if ( fi == true ) {
                     clearInterval(interval);
                 }
             }, 1200);
     
             return () => clearInterval(interval);
         }
-    }, [loggedIn, loader, ToDisplay.length]);
+    }, [loggedIn, loader, fi ]);
 
 
 

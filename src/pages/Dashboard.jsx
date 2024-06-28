@@ -1,20 +1,14 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { LoginWarning } from '../components';
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ColorButton } from './../components';
-import  EmployeeService from '../appwrite/EmployeeCollection';
-import { updateEmployeeList } from '../store/EmployeeSlice';
-import departmentService from '../appwrite/departmentCollection';
-import { updateDepartmentList } from '../store/departmentSlice';
-import  PositionService from '../appwrite/positionCollection';
-import { updatePositionList } from '../store/positionSlice';
-import projectService from '../appwrite/projectCollection';
-import { updateProjectList } from '../store/projectSlice';
+import { useDispatch, useSelector } from 'react-redux'
+import { LoginWarning } from '../components'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { ColorButton } from './../components'
+import dataLoader from '../store/dataLoader'
 
 const Dashboard = () => {
 
     const loggedIn = useSelector((state) => state.auth.loggedIn);
+    const loadedOnce  = useSelector((state) => state.auth.dataLoaded);
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const departmentsCount = useSelector((state) => (state.dept.departmentsList ? state.dept.departmentsList.length : 0));
@@ -23,30 +17,20 @@ const Dashboard = () => {
     const completedProjects = useSelector(((state) => state.project.completed))
     const progressProjects = useSelector(((state) => state.project.inprogress))
     
-    const dataLoader = async ()=>{
-        console.log ( "running loader")
-        try {
-            dispatch(updateEmployeeList(await EmployeeService.getEmployees()));
-            dispatch(updateDepartmentList(await departmentService.getDepartments()))
-            dispatch(updatePositionList(await PositionService.getPositions()));
-            dispatch(updateProjectList(await projectService.getProjects()));
-        } catch (error) {
-            throw error 
-        }
-    }
 
-
+    const [fi , setFi] = useState(false )
     useEffect(() => {
         if (loggedIn) {
             const interval = setInterval(() => {
-                dataLoader();
-                if (employeeCount > 0) {
+                dataLoader(dispatch);
+                setFi(true)
+                if (fi == true ) {
                     clearInterval(interval);
                 }                
             }, 1200);
             return () => clearInterval(interval);
         }
-    }, [loggedIn ,employeeCount]);
+    }, [loggedIn , fi  ]);
 
     return (
         <>

@@ -63,11 +63,10 @@ const PosAddEdit = () => {
         console.log(selectedDepartments)
     };
 
-    const handleDelete = (departmentName) => {
-        const department = departments.find(dep => dep.DepartmentName === departmentName);
-        if (department) {
-          setSelectedDepartments(selectedDepartments.filter(id => id !== department.id));
-        }
+    const handleDelete = (departmentid ) => {
+        
+        setSelectedDepartments(selectedDepartments.filter(id => id !== departmentid));
+        
     };
 
     return (
@@ -117,8 +116,8 @@ const PosAddEdit = () => {
                                     {departments
                                         .filter(department => selectedDepartments.includes(department.id))
                                         .map((department) => (
-                                            <div key={department.id} className="mb-4">
-                                                <PillButton value={department.DepartmentName} onDelete={()=>handleDelete(department.DepartmentName)} />
+                                            <div key={department.id} className="mb-4" onClick={()=>handleDelete(department.id)}>
+                                                <PillButton value={department.DepartmentName} />
                                             </div>
                                         ))
                                     }

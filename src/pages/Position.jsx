@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import  PositionService from '../appwrite/positionCollection';
 import { updatePositionList } from '../store/positionSlice';
 import { useNavigate } from 'react-router-dom';
+import dataLoader from './../store/dataLoader';
 
 
 
@@ -15,29 +16,21 @@ const Position = () => {
     const navigate = useNavigate();
     const [loader, setLoader] = useState(false);
 
-    const Positionloader = async () => {
-        console.log ( "running position loader ");
-        try {
-            const data = await PositionService.getPositions();
-            dispatch(updatePositionList(data));
-        } catch (error) {
-            console.log(error);
-        }
-    };
 
-
+    const [fi , setFi] = useState(false);
     useEffect(() => {
         if (loggedIn) {
             const interval = setInterval(() => {
-                Positionloader();
-                if (ToDisplay && ToDisplay.length > 0) {
+                dataLoader(dispatch)
+                setFi(true)
+                if (fi == true) {
                     clearInterval(interval);
                 }
             }, 1200);
     
             return () => clearInterval(interval);
         }
-    }, [loggedIn, loader, ToDisplay.length]);
+    }, [loggedIn, loader, fi ]);
 
     const handleDelete = async (id) => {
         try {
