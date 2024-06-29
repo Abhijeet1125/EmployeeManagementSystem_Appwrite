@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import authService from "../appwrite/auth";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -24,6 +24,11 @@ const Login = () => {
             dispatch ( updateAuthSlice(false))
         }
     }
+
+    useEffect ( ()=>{
+        const lo = async () => { await authService.logout();}
+        lo ()
+    } , [])
 
     return (
         <>
