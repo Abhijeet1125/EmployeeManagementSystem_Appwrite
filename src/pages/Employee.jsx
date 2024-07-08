@@ -36,11 +36,14 @@ const Employee = () => {
 
 
     const handleDelete = async (id) => {
+        const confirmed = window.confirm("Are you sure you want to delete this item?");
+        if ( confirmed){
         try {
             await EmployeeService.deleteEmployee({ id });
             setLoader((e) => !e)
         } catch (error) {
             console.log(error);
+        }
         }
     };
 

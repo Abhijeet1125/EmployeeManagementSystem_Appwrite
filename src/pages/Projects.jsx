@@ -40,12 +40,15 @@ const Projects = () => {
     }, [loggedIn, loader, ]);
 
     const handleDelete = async (id) => {
+        const confirmed = window.confirm("Are you sure you want to delete this item?");
+        if ( confirmed){
         try {
             await projectService.deleteProject({ id });
             setLoader((e) => !e)
         } catch (error) {
             console.log(error);
         }
+    }
     };
 
     const navAddEdit = (id) => {

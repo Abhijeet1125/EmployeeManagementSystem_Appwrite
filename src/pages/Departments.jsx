@@ -24,7 +24,7 @@ const Departments = () => {
                 if (fi == true) {
                     clearInterval(interval);
                 }
-            }, 1200);
+            }, 1000);
     
             return () => clearInterval(interval);
         }
@@ -32,11 +32,14 @@ const Departments = () => {
     
 
     const handleDelete = async (id) => {
-        try {
-            await departmentService.deleteDepartment({ id });
-            setLoader((e) => !e);
-        } catch (error) {
-            console.log(error);
+        const confirmed = window.confirm("Are you sure you want to delete this item?");
+        if ( confirmed){
+            try {
+                await departmentService.deleteDepartment({ id });
+                setLoader((e) => !e);
+            } catch (error) {
+                console.log(error);
+            }
         }
     };
 

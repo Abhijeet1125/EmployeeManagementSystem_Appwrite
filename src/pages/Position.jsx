@@ -33,12 +33,15 @@ const Position = () => {
     }, [loggedIn, loader, fi ]);
 
     const handleDelete = async (id) => {
+        const confirmed = window.confirm("Are you sure you want to delete this item?");
+        if ( confirmed){
         try {
             await PositionService.deletePosition({ id });
             setLoader((e) => !e)
         } catch (error) {
             console.log(error);
         }
+    }
     };
 
     const navAddEdit = (id) => {
