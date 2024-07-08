@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { LoginWarning } from '../components';
+import { LoginWarning , LoadingComponent} from '../components';
 import projectService from '../appwrite/projectCollection'
+import dataLoader from '../store/dataLoader';
 
 const ProAddEdit = () => {
     const { id } = useParams()
@@ -10,12 +11,14 @@ const ProAddEdit = () => {
     const departments = useSelector(state => state.dept.departmentsList)
     const prolist = useSelector((state) => state.project.projectList);
     const navigate = useNavigate()
+    const dispatch = useDispatch();
 
     const [projectName, setProjectName] = useState('');
     const [completed, setCompleted] = useState(false);
     const [department, setDepartment] = useState('');
     const [projectDescription, setProjectDescription] = useState('');
     const [no, setNO] = useState(null)
+    const [loading , setLoading ] = useState ( false);
 
     useEffect(() => {
         if (id != 'new' && prolist.length > 0) {
@@ -29,9 +32,21 @@ const ProAddEdit = () => {
         }
     }, []);
 
+    const validate = () => {
+        setProjectName ( e => e.trim())
+        setNO(e => null);
+        if ( projectName .trim().length == 0 ){
+            setNO ( e => "Project Name Required");
+            return false ; 
+        }
+        return true 
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+        const vali = validate ( );
+        if ( vali ){
+            setLoading ( true );
         try {
             if (id === 'new') {
                 await projectService.createProject({ 
@@ -50,21 +65,27 @@ const ProAddEdit = () => {
                     ProjectDescription : projectDescription,
                 })
             }
+            await dataLoader(dispatch )
+            setLoading ( false );
             navigate('/Project')
         } catch (error) {
             console.log(error)
+            setLoading ( false );
             setNO("Sorry,Please try again")
         }
+    }
     };
 
     return (
         <>
             {!loggedIn && <LoginWarning />}
-            {loggedIn && (
+            { loading && <LoadingComponent/>}
+            {loggedIn && loading == false && (
                 <div className='bg-gray-900 text-black min-h-screen pt-8'>
                     {no && <p className="text-red-500 mt-4">{no}</p>}
                     <div className="max-w-lg mx-auto p-6 bg-gray-100 rounded-lg shadow-md mt-10">
                         <h2 className="text-2xl font-bold mb-6 text-center text-black">Project Form</h2>
+                        <button onClick={ ()=> navigate('/Project')} className="bg-blue-500  mb-4 text-white px-4 py-2 rounded-md hover:bg-blue-600"> Back </button>
                         <form onSubmit={handleSubmit}>
                             <div className="mb-4 text-black">
                                 <label htmlFor="projectName" className="block text-sm font-medium text-gray-700">Project Name:</label>

@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { LoginWarning } from '../components';
+import { LoginWarning , LoadingComponent} from '../components';
 import { useEffect, useState } from 'react';
 import  PositionService from '../appwrite/positionCollection';
 import { updatePositionList } from '../store/positionSlice';
@@ -14,7 +14,7 @@ const Position = () => {
     const headers = ['PositionName', 'department' , 'PositionDescription'];
     const ToDisplay = useSelector((state) => state.position.PositionList);
     const navigate = useNavigate();
-    const [loader, setLoader] = useState(false);
+    const [loading , setLoading] = useState(false);
 
 
     const [fi , setFi] = useState(false);
@@ -30,14 +30,16 @@ const Position = () => {
     
             return () => clearInterval(interval);
         }
-    }, [loggedIn, loader, fi ]);
+    }, [loggedIn, fi ]);
 
     const handleDelete = async (id) => {
         const confirmed = window.confirm("Are you sure you want to delete this item?");
         if ( confirmed){
         try {
             await PositionService.deletePosition({ id });
-            setLoader((e) => !e)
+            setLoading(true );
+            await dataLoader(dispatch);
+            setLoading(false);
         } catch (error) {
             console.log(error);
         }
@@ -56,7 +58,8 @@ const Position = () => {
 
         <>
             {!loggedIn && <LoginWarning />}
-            {loggedIn && (
+            {loading && <LoadingComponent/>}
+            {loggedIn && loading == false && (
                 <div className=' bg-gray-900 text-white min-h-screen '>
                     <div className="container mx-auto p-6">
                         <h1 className="text-3xl font-bold mb-6">Positions</h1>

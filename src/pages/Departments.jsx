@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { LoginWarning } from '../components';
+import { LoginWarning , LoadingComponent } from '../components';
 import { useEffect, useState } from 'react';
 import departmentService from '../appwrite/departmentCollection';
 import { useNavigate } from 'react-router-dom';
@@ -28,7 +28,7 @@ const Departments = () => {
     
             return () => clearInterval(interval);
         }
-    }, [loggedIn, fi , loader]);
+    }, [loggedIn, fi ]);
     
 
     const handleDelete = async (id) => {
@@ -36,7 +36,9 @@ const Departments = () => {
         if ( confirmed){
             try {
                 await departmentService.deleteDepartment({ id });
-                setLoader((e) => !e);
+                setLoader(true);
+                await dataLoader(dispatch);
+                setLoader ( false)                
             } catch (error) {
                 console.log(error);
             }
@@ -54,7 +56,8 @@ const Departments = () => {
     return (
         <>
             {!loggedIn && <LoginWarning />}
-            {loggedIn && (
+            { loader && <LoadingComponent/>}
+            {loggedIn && loader == false && (
                 <div className= "bg-gray-900 text-white">
                     <div className="container mx-auto p-6">
                         <h1 className="text-3xl font-bold mb-6">Departments</h1>

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { LoginWarning } from '../components';
+import { LoginWarning , LoadingComponent } from '../components';
 import PositionService from '../appwrite/positionCollection'
 import PillButton from '../components/PillButton';
+import dataLoader from '../store/dataLoader';
 
 const PosAddEdit = () => {
     const { id } = useParams()
@@ -11,12 +12,14 @@ const PosAddEdit = () => {
     const departments = useSelector(state => state.dept.departmentsList)
     const poslist = useSelector((state) => state.position.PositionList);
     const navigate = useNavigate()
+    const dispatch = useDispatch()
 
     const [positionName, setPositionName] = useState('');
     const [selectedDepartments, setSelectedDepartments] = useState([]);
     const [department, setDepartment] = useState("");
     const [positionDescription, setPositionDescription] = useState('');
     const [no, setNO] = useState(null)
+    const [loading , setLoading ] = useState ( false );
 
     useEffect(() => {
         if (id != 'new' && poslist.length > 0) {
@@ -26,14 +29,26 @@ const PosAddEdit = () => {
                 setSelectedDepartments(departmentIds);
                 setPositionName(posi.PositionName)
                 setPositionDescription(posi.PositionDescription)
-                console.log(departmentIds, "ye ha aasli maal", selectedDepartments)
             }
         }
     }, []);
 
 
+    const validate = ()=>{
+        setPositionName ( e => e.trim());
+        setNO(null)
+        if ( positionName.trim().length == 0 ){
+            setNO (e => "Position Name is required");
+            return false
+        }
+        return true ; 
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const valida = validate ( );
+        if ( valida){
+            setLoading ( true );
         try {
             if (id === 'new') {
                 await PositionService.createPosition({
@@ -50,17 +65,20 @@ const PosAddEdit = () => {
                     PositionDescription: positionDescription,
                 })
             }
+            await dataLoader ( dispatch )
+            setLoading (false);
             navigate('/Position')
         } catch (error) {
             console.log(error)
+            setLoading ( false);
             setNO("Sorry,Please try again")
         }
+    }
     };
 
     const handleDepartmentChange = (e) => {
         setSelectedDepartments(prev => [...prev, e]);
         setDepartment("");
-        console.log(selectedDepartments)
     };
 
     const handleDelete = (departmentid ) => {
@@ -72,11 +90,13 @@ const PosAddEdit = () => {
     return (
         <>
             {!loggedIn && <LoginWarning />}
-            {loggedIn && (
+            { loading && <LoadingComponent/> }
+            {loggedIn && loading == false && (
                 <div className= "bg-gray-900 text-black min-h-screen pt-8">
                     {no && <p className="text-red-500 mt-4">{no}</p>}
                     <div className="max-w-lg mx-auto p-6 bg-gray-100 rounded-lg shadow-md mt-10">
                         <h2 className="text-2xl font-bold mb-6 text-center text-black ">Position Form</h2>
+                        <button onClick={ ()=> navigate('/Position')} className="bg-blue-500  mb-4 text-white px-4 py-2 rounded-md hover:bg-blue-600"> Back </button>
                         <form onSubmit={handleSubmit}>
                             <div className="mb-4">
                                 <label htmlFor="positionName" className="block text-sm font-medium text-gray-700">Position Name:</label>
@@ -85,8 +105,7 @@ const PosAddEdit = () => {
                                     id="positionName"
                                     name="positionName"
                                     value={positionName}
-                                    onChange={(e) => setPositionName(e.target.value)}
-                                    required
+                                    onChange={(e) => setPositionName(e.target.value)}                                
                                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 />
                             </div>

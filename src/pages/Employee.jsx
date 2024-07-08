@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { LoginWarning , BlueButton } from '../components';
+import { LoginWarning , BlueButton , LoadingComponent} from '../components';
 import { useEffect, useState } from 'react';
 import  EmployeeService from '../appwrite/EmployeeCollection';
 import { useNavigate } from 'react-router-dom';
@@ -30,7 +30,7 @@ const Employee = () => {
     
             return () => clearInterval(interval);
         }
-    }, [loggedIn, loader, fi ]);
+    }, [loggedIn, fi ]);
 
 
 
@@ -38,10 +38,13 @@ const Employee = () => {
     const handleDelete = async (id) => {
         const confirmed = window.confirm("Are you sure you want to delete this item?");
         if ( confirmed){
+            setLoader ( true );
         try {
             await EmployeeService.deleteEmployee({ id });
-            setLoader((e) => !e)
+            await dataLoader ( dispatch);
+            setLoader ( false)
         } catch (error) {
+            setLoader ( false)
             console.log(error);
         }
         }
@@ -59,7 +62,8 @@ const Employee = () => {
 
         <>
             {!loggedIn && <LoginWarning />}
-            {loggedIn && (
+            {loader && <LoadingComponent/>}
+            {loggedIn &&  loader == false && (
                 <div className='bg-gray-900 text-white ' >
                     <div className="container mx-auto pt-6">
                         <h1 className="text-3xl font-bold mb-6">Employees</h1>

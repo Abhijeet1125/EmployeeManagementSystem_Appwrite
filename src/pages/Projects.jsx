@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { LoginWarning } from '../components';
+import { LoadingComponent, LoginWarning } from '../components';
 import { useEffect, useState } from 'react';
 import projectService from '../appwrite/projectCollection';
 import { updateProjectList } from '../store/projectSlice';
@@ -14,38 +14,32 @@ const Projects = () => {
     const navigate = useNavigate();
     const [loader, setLoader] = useState(false);
 
-    const Projectloader = async () => {
-        console.log ( "running project loader")
-        try {
-            const data = await projectService.getProjects();
-            dispatch(updateProjectList(data));
-        } catch (error) {
-            console.log(error);
-        }
-    };
 
-    const [fi  , setFi] = useState ( false);
+    const [fi , setFi] = useState(false);
     useEffect(() => {
         if (loggedIn) {
             const interval = setInterval(() => {
                 dataLoader(dispatch)
-                setFi ( true )
-                if (fi == false) {
+                setFi(true)
+                if (fi == true) {
                     clearInterval(interval);
                 }
             }, 1200);
     
             return () => clearInterval(interval);
         }
-    }, [loggedIn, loader, ]);
+    }, [loggedIn, fi ]);
 
     const handleDelete = async (id) => {
         const confirmed = window.confirm("Are you sure you want to delete this item?");
         if ( confirmed){
+        setLoader ( true );
         try {
             await projectService.deleteProject({ id });
-            setLoader((e) => !e)
+            await dataLoader ( dispatch)
+            setLoader(false)
         } catch (error) {
+            setLoader ( false)
             console.log(error);
         }
     }
@@ -63,7 +57,8 @@ const Projects = () => {
 
         <>
             {!loggedIn && <LoginWarning />}
-            {loggedIn && (
+            {loader && <LoadingComponent></LoadingComponent>}
+            {loggedIn && loader == false && (
                 <div className=' bg-gray-900 text-white min-h-screen'>
                     <div className="container mx-auto p-6">
                         <h1 className="text-3xl font-bold mb-6">Projects</h1>

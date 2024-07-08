@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { LoginWarning, PillButton } from '../components';
+import { LoadingComponent, LoginWarning, PillButton } from '../components';
 import EmployeeService from '../appwrite/EmployeeCollection';
+import dataLoader from './../store/dataLoader';
+
 
 const EmpAddEdit = () => {
     const { id } = useParams()
@@ -12,6 +14,8 @@ const EmpAddEdit = () => {
     const poslist = useSelector((state) => state.position.PositionList)
     const emplist = useSelector((state) => state.employee.EmployeeList)
     const navigate = useNavigate()
+    const dispatch = useDispatch()
+    const [loading , setLoading] = useState ( false);
 
     const [formData, setFormData] = useState({
         FirstName: '',
@@ -26,8 +30,45 @@ const EmpAddEdit = () => {
     });
     const [no, setNO] = useState(null)
 
+    const validate  = ( ) => { 
+        setNO ( null );
+        if ( formData.FirstName.trim().length == 0 ){
+            setNO ( "First name required");
+            return false ; 
+        }
+        if ( formData.Email.trim().length == 0 ){
+            setNO ( "Email required ");
+            return false ; 
+        }
+        if ( formData.Gender .trim().length == 0 ){
+            setNO ( "gender required");
+            return false 
+        }
+        if ( formData.Phone.trim().length == 0 ){
+            setNO ( "Phone no required ");
+            return false ; 
+        }
+        if ( formData.Address .trim().length == 0 ){
+            setNO ( "Address required");
+            return false 
+        }
+        if ( formData.department .trim().length == 0 ){
+            setNO ( "department required");
+            return false 
+        }
+        if ( formData.Phone .trim().length != 10 ){
+            setNO ( "Enter 10 digit number");
+            return false 
+        }
+        
+        return true ; 
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault()
+        const valid = validate ();
+        if ( valid ){
+            setLoading ( true);
         const filteredList = selectedpro.filter(item => item !== undefined);
         try {
             if (id === 'new') {
@@ -57,11 +98,15 @@ const EmpAddEdit = () => {
                     Address: formData.Address,
                 })
             }
+            await dataLoader ( dispatch)
+            setLoading ( false)
             navigate('/Employee')
         } catch (error) {
             console.log(error)
+            setLoading ( false)
             setNO("Sorry,Please try again")
         }
+    }
     };
 
 
@@ -123,12 +168,15 @@ const EmpAddEdit = () => {
     return (
         <>
             {!loggedIn && <LoginWarning />}
-            {loggedIn && (
+            { loading && <LoadingComponent/>}
+            {loggedIn && loading  == false &&  (
                 <>
-                    {no && <p className="text-red-500 mt-4">{no}</p>}
+                    
                     <div className="bg-gray-900  p-6 min-h-screen flex items-center justify-center">
                         <div className="w-full max-w-2xl bg-gray-100 rounded-lg p-3">
+                        {no && <p className="text-red-500 mt-4">{no}</p>}
                             <h2 className='text-amber-700 font-bold p-6 '>Employee Form</h2>
+                            <button onClick={ ()=> navigate('/Employee')} className="bg-blue-500  mb-4 text-white px-4 py-2 rounded-md hover:bg-blue-600"> Back </button>
                             <form className="space-y-4" onSubmit={handleSubmit}>
                                 <div className="flex space-x-4">
                                     <div className="w-1/2">
